@@ -14,8 +14,11 @@ const ordersRoutes = require('./routes/orders');
 const { HOST, PORT, API_URL, CONNECTION_STRING } = process.env;
 
 // Middleware
-app.use(cors());
-app.options('*', cors());
+app.use(
+  cors({
+    origin: '*',
+  })
+);
 app.use(express.json());
 app.use(morgan('tiny'));
 
@@ -27,10 +30,12 @@ app.use(`${API_URL}/orders`, ordersRoutes);
 mongoose
   .connect(CONNECTION_STRING, {
     useNewUrlParser: true,
+    useFindAndModify: false,
+    useCreateIndex: true,
     useUnifiedTopology: true,
   })
   .then(() => {
-    console.log('Connected to MongoDB..');
+    console.log('Connected to MongoDB...');
   })
   .catch((err) => {
     console.log(err);
