@@ -1,10 +1,13 @@
 const { Category } = require('../models/category');
 const express = require('express');
 const router = express.Router();
+const asyncHandler = require('express-async-handler');
 
 // @desc      Get all Categories
-router.get(`/`, async (req, res) => {
-  try {
+// @access    Private
+router.get(
+  `/`,
+  asyncHandler(async (req, res) => {
     const categoryList = await Category.find();
 
     if (!categoryList) {
@@ -13,14 +16,14 @@ router.get(`/`, async (req, res) => {
         .json({ success: false, message: 'No any categories found' });
     }
     res.status(200).json({ success: true, data: categoryList });
-  } catch (error) {
-    return res.status(400).json({ success: false, error: error });
-  }
-});
+  })
+);
 
 // @desc      Get single Category
-router.get('/:id', async (req, res) => {
-  try {
+// @access    Private
+router.get(
+  '/:id',
+  asyncHandler(async (req, res) => {
     const category = await Category.findById(req.params.id);
     if (!category) {
       return res.status(400).json({
@@ -29,19 +32,20 @@ router.get('/:id', async (req, res) => {
       });
     }
     res.status(200).json({ success: true, data: category });
-  } catch (error) {
-    return res.status(400).json({ success: false, error: error });
-  }
-});
+  })
+);
 
 // @desc      Create Category
-router.post('/', async (req, res) => {
-  let category = new Category({
-    name: req.body.name,
-    icon: req.body.icon,
-    color: req.body.color,
-  });
-  try {
+// @access    Private
+router.post(
+  '/',
+  asyncHandler(async (req, res) => {
+    let category = new Category({
+      name: req.body.name,
+      icon: req.body.icon,
+      color: req.body.color,
+    });
+
     category = await category.save();
 
     if (!category)
@@ -50,19 +54,19 @@ router.post('/', async (req, res) => {
         .json({ success: false, message: 'The category cannot be created' });
 
     res.status(201).json({ success: true, data: category });
-  } catch (error) {
-    return res.status(400).json({ success: false, error: error });
-  }
-});
+  })
+);
 
 // @desc      Update Category
-router.put('/:id', async (req, res) => {
-  try {
+// @access    Private
+router.put(
+  '/:id',
+  asyncHandler(async (req, res) => {
     const category = await Category.findByIdAndUpdate(
       req.params.id,
       {
         name: req.body.name,
-        icon: req.body.icon,
+        icon: req.body.icon || category.icon,
         color: req.body.color,
       },
       { new: true }
@@ -74,14 +78,14 @@ router.put('/:id', async (req, res) => {
         .json({ success: false, message: 'Category update failed' });
 
     res.status(200).json({ success: true, data: category });
-  } catch (error) {
-    return res.status(400).json({ success: false, error: error });
-  }
-});
+  })
+);
 
 // @desc      Delete Category
-router.delete('/:id', async (req, res) => {
-  try {
+// @access    Private
+router.delete(
+  '/:id',
+  asyncHandler(async (req, res) => {
     const category = await Category.findByIdAndRemove(req.params.id);
     if (!category) {
       return res
@@ -89,9 +93,7 @@ router.delete('/:id', async (req, res) => {
         .json({ success: false, message: 'Category not found' });
     }
     res.status(200).json({ success: true, message: 'Category deleted' });
-  } catch (error) {
-    return res.status(400).json({ success: false, error: error });
-  }
-});
+  })
+);
 
 module.exports = router;

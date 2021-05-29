@@ -4,6 +4,8 @@ const morgan = require('morgan');
 const mongoose = require('mongoose');
 const cors = require('cors');
 require('dotenv/config');
+const authJwt = require('./middleware/jwtValidator');
+const { errorHandler } = require('./middleware/errorMiddleware.js');
 
 //Routes
 const categoriesRoutes = require('./routes/categories');
@@ -21,11 +23,15 @@ app.use(
 );
 app.use(express.json());
 app.use(morgan('tiny'));
+app.use(authJwt());
 
 app.use(`${API_URL}/categories`, categoriesRoutes);
 app.use(`${API_URL}/products`, productsRoutes);
 app.use(`${API_URL}/users`, usersRoutes);
 app.use(`${API_URL}/orders`, ordersRoutes);
+
+// error handler middleware
+app.use(errorHandler);
 
 mongoose
   .connect(CONNECTION_STRING, {
