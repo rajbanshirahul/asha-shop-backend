@@ -24,6 +24,7 @@ app.use(
 app.use(express.json());
 app.use(morgan('tiny'));
 app.use(authJwt());
+app.use('/public/uploads', express.static(`${__dirname}/public/uploads`));
 
 app.use(`${API_URL}/categories`, categoriesRoutes);
 app.use(`${API_URL}/products`, productsRoutes);
